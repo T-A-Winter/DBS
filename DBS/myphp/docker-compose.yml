@@ -1,0 +1,9 @@
+version: '3'
+services:
+  web:
+    container_name: php7_apache_oci8
+    image: adrianharabula/php7-with-oci8
+    volumes:
+      - ./public_html:/var/www/html
+    ports:
+      - "8080:80"
