@@ -78,8 +78,19 @@ class DatabaseHelper
 
     public function selectPlayer($userName){
         $sql = "SELECT * FROM player
-            WHERE user_name = '%{$userName}%'";
+            WHERE upper(user_name) LIKE upper('%{$userName}%')";
             
+        $statement = oci_parse($this->conn, $sql);
+        oci_execute($statement);
+        oci_fetch_all($statement, $res, 0, 0, OCI_FETCHSTATEMENT_BY_ROW);
+        oci_free_statement($statement);
+        return $res;
+    }
+
+    public function selectDungeonMaster($userName){
+        $sql = "SELECT * FROM dungeon_master
+            WHERE upper(user_name) LIKE upper('%{$userName}%')";
+
         $statement = oci_parse($this->conn, $sql);
         oci_execute($statement);
         oci_fetch_all($statement, $res, 0, 0, OCI_FETCHSTATEMENT_BY_ROW);
@@ -90,19 +101,18 @@ class DatabaseHelper
     public function getDungeonMasterId($userName){
         $sql = "SELECT dungeon_master_id
             FROM dungeon_master 
-            WHERE user_name = '%{$userName}%'";
+            WHERE user_name = '{$userName}'";
         $statement = oci_parse($this->conn, $sql);
         oci_execute($statement);
         oci_fetch_all($statement, $res, 0, 0, OCI_FETCHSTATEMENT_BY_ROW);
-        //echo "HII {$res[0]['dungeon_master_id']}";
-        //echo "$sql";
+        #echo "$sql";
         return $res;
     }
 
     public function getAdventureId($adventure){
         $sql = "SELECT adventure_id
             FROM adventure
-            WHERE name = '%{$adventure}%'";
+            WHERE name = '{$adventure}'";
         
         $statement = oci_parse($this->conn, $sql);
         oci_execute($statement);
@@ -119,7 +129,7 @@ class DatabaseHelper
 		$success = oci_execute($statement) && oci_commit($this->conn);
         oci_free_statement($statement);
 
-        echo "Inserted into RUNS: {$success}";
+        #echo "Inserted into RUNS: {$success}";
         return $success;
     }
 
@@ -127,9 +137,9 @@ class DatabaseHelper
         if (isset($recommendedLevel)) {
             $sql = "INSERT INTO 
                 adventure (name, recommended_level) 
-                VALUES ('%{$adventure}%', '{$recommendedLevel}')";
+                VALUES ('{$adventure}', '{$recommendedLevel}')";
         } else {
-            $sql = "INSERT INTO adventure (name) VALUES ('%{$adventure}%')";
+            $sql = "INSERT INTO adventure (name) VALUES ('{$adventure}')";
         }
 
         $statement = oci_parse($this->conn, $sql);
@@ -141,7 +151,7 @@ class DatabaseHelper
 
     public function insertIntoDungeonMaster($userName, $email, $adventure, $recommendedLevel){
 
-        $sql = "INSERT INTO dungeon_master (user_name, e_mail) VALUES ('%{$userName}%', '%{$email}%')";
+        $sql = "INSERT INTO dungeon_master (user_name, e_mail) VALUES ('{$userName}', '{$email}')";
         $statement = oci_parse($this->conn, $sql);
         $success = oci_execute($statement) && oci_commit($this->conn);
         oci_free_statement($statement);
@@ -149,14 +159,14 @@ class DatabaseHelper
 
 
         $dmIdArray = $this->getDungeonMasterId($userName);
-        $dmId = !empty($dmIdArray) ? $dmIdArray[0]['dungeon_master_id'] : null;
+        $dmId = !empty($dmIdArray) ? $dmIdArray[0]['DUNGEON_MASTER_ID'] : null;
 
         $advId = null;
         if (isset($adventure)) {
             $success = $this->insertIntoAdventure($adventure, $recommendedLevel);
 
             $advIdArray = $this->getAdventureId($adventure);
-            $advId = !empty($advIdArray) ? $advIdArray[0]['adventure_id'] : null;
+            $advId = !empty($advIdArray) ? $advIdArray[0]['ADVENTURE_ID'] : null;
         }
 
         if (!empty($dmId) && !empty($advId)) {
@@ -167,12 +177,98 @@ class DatabaseHelper
     }
 
     public function insertIntoPlayer($userName, $email){
-        $sql = "INSERT INTO player (user_name, e_mail) VALUES ('%{$userName}%', '%{$email}%')";
+        $sql = "INSERT INTO player (user_name, e_mail) VALUES ('{$userName}', '{$email}')";
 
         $statement = oci_parse($this->conn, $sql);
         $success = oci_execute($statement) && oci_commit($this->conn);
         oci_free_statement($statement);
         return $success;
+    }
+
+    public function deletePlayer($userName){
+        $errorcode = 0;
+        $sql = "DELETE FROM player WHERE user_name = '{$userName}'";
+        $statement = oci_parse($this->conn, $sql);
+        #oci_bind_by_name($statement, ':userName', $userName);
+
+        oci_execute($statement);
+        
+        oci_free_statement($statement);
+        return $errorcode;
+    }
+
+    public function getPlayerEmail($userName){
+        $sql = "SELECT e_mail 
+            FROM player
+            WHERE user_name = '{$userName}'";
+        $statement = oci_parse($this->conn, $sql);
+        oci_execute($statement);
+        oci_fetch_all($statement, $res, 0, 0, OCI_FETCHSTATEMENT_BY_ROW);
+        return $res;
+    }
+
+    public function updateDungeonMaster($newUserName, $oldUserName, $newEmail){
+        if(isset($newEmail)){
+            $sql = "UPDATE dungeon_master
+                SET e_mail = '{$newEmail}'
+                WHERE user_name = '{$oldUserName}'";
+            $statement = oci_parse($this->conn, $sql);
+            $success = oci_execute($statement) && oci_commit($this->conn);
+            oci_free_statement($statement);
+        }
+        $errorcode = 0;
+        $sql = "UPDATE dungeon_master
+            SET user_name = '{$newUserName}'
+            WHERE user_name = '{$oldUserName}'";
+        $statement = oci_parse($this->conn, $sql);
+        $success = oci_execute($statement) && oci_commit($this->conn);
+        oci_free_statement($statement);
+        return $success;
+    }
+
+    public function updatePlayer($newUserName, $oldUserName, $newEmail){
+        if(isset($newEmail)){
+            //$oldEmailArray = this->getPlayerEmail($userName);
+            //$oldEmail = !empty($oldEmailArray)[0]['E_MAIL'] : null;
+            $sql = "UPDATE player
+                SET e_mail = '{$newEmail}'
+                WHERE user_name = '{$oldUserName}'";
+            $statement = oci_parse($this->conn, $sql);
+            $success = oci_execute($statement) && oci_commit($this->conn);
+            oci_free_statement($statement);
+        }
+
+        $errorcode = 0;
+        $sql = "UPDATE player
+            SET user_name = '{$newUserName}'
+            WHERE user_name = '{$oldUserName}'";
+        
+        $statement = oci_parse($this->conn, $sql);
+        $success = oci_execute($statement) && oci_commit($this->conn);
+        oci_free_statement($statement);
+        return $success;
+    }
+
+    public function deleteAdventuresRunsTable($dmId){
+        $sql = "DELETE FROM runs WHERE dungeon_master = {$dmId}";
+        $statement = oci_parse($this->conn, $sql);
+        oci_execute($statement);
+        oci_free_statement($statement);
+        //return $errorcode;
+    }
+
+    public function deleteDungeonMaster($userName){
+        // need to delete any adventures from runs table
+        $dmIdArray = $this->getDungeonMasterId($userName);
+        $dmId = !empty($dmIdArray) ? $dmIdArray[0]['DUNGEON_MASTER_ID'] : null;
+        $this->deleteAdventuresRunsTable($dmId);
+
+        $sql = "DELETE FROM dungeon_master WHERE user_name = '{$userName}'";
+        $statement = oci_parse($this->conn, $sql);
+        oci_execute($statement);
+        
+        oci_free_statement($statement);
+        return $errorcode;
     }
     
 }

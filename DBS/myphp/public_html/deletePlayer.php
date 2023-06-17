@@ -1,40 +1,3 @@
-<?php
-// Include DatabaseHelper.php file
-require_once('DatabaseHelper.php');
-
-// Instantiate DatabaseHelper class
-$database = new DatabaseHelper();
-
-// TODO: BUG, when only username is submitted, email changes to null
-if (isset($_POST['submit'])){
-    $username = '';
-    if(isset($_POST['username'])){
-        $username = $_POST['username'];
-    }
-
-    $email = null;
-    if(isset($_POST['email'])){
-        $email = $_POST['email'];
-    }
-
-    if (!empty($username) && !empty($email)) {
-        $success = $database->insertIntoPlayer($username, $email);
-
-        if ($success) {
-            echo "Data successfully inserted!";
-        } else {
-            echo "Failed to insert data.";
-        }
-    } else if(!empty($username)){
-        $success = $database->insertIntoPlayer($username, $email);
-        
-    } else {
-        echo "Username and/or Email are required.";
-    }
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -55,7 +18,8 @@ if (isset($_POST['submit'])){
                 <a class="navbar-brand" href="#">Dungeon and Dragons Database</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!--Search Session-->
+
+                    <!--Search Player-->
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="#">
@@ -73,9 +37,10 @@ if (isset($_POST['submit'])){
                             </a>
                         </li>
 
-                        <!--Search Adventure search-->
+                        <!--Search Dungeonmaster-->
                         <li class="nav-item">
                             <a class="nav-link" href="#">
+
                                 <form method="Post" action="searchDungeonMasterResults.php">
                                     <label for="new_name">Search Dungeon Master:</label>
                                     <input id="new_name" name="name" type="text" maxlength="20">
@@ -103,25 +68,12 @@ if (isset($_POST['submit'])){
                 </div>
             </div>
         </nav>
-
-        <!--Page Content-->
+        <!-- Page content-->
         <div class="container">
-
-        <form action="player.php" method="post">
-            <div class="mb-3">
-                <label for="username" class="form-label">User Name:</label>
-                <input type="text" class="form-control" id="username" name="username" required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email address:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <button type="submit" class="btn btn-primary" name="submit">Submit</button>
-        </form>
-
-
+        
+            
+            
         </div>
-
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->

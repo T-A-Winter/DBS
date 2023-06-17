@@ -19,6 +19,7 @@ $getRichestPartys = $database->getRichestPartys($limitHighestParty);
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <!--TODO: Change that when Dungeon and Dragons Database is pressed, it directs to home-->
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
@@ -73,7 +74,7 @@ $getRichestPartys = $database->getRichestPartys($limitHighestParty);
 
                         <!--Dropdown Menu-->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Inserts/Deletes</a>
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Inserts</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="dungeonmaster.php">Dungeonmaster</a></li>
                                 <li><a class="dropdown-item" href="player.php">Player</a></li>
@@ -88,7 +89,7 @@ $getRichestPartys = $database->getRichestPartys($limitHighestParty);
         </nav>
         <!-- Page content-->
         <div class="container">
-        
+        <!--TODO: Change so that titel of the tables are befor the limit selection-->
             <div class="text-center mt-5">
                 <div class="row align-item-end">
 
@@ -175,6 +176,7 @@ $getRichestPartys = $database->getRichestPartys($limitHighestParty);
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <!--TODO: BUG here. Gold is not shown-->
                                     <?php foreach ($getRichestPartys as $index => $character) { ?>
                                         <tr>
                                             <td><?= $index + 1 ?></td>

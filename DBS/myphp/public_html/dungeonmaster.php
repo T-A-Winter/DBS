@@ -5,7 +5,8 @@ require_once('DatabaseHelper.php');
 // Instantiate DatabaseHelper class
 $database = new DatabaseHelper();
 
-if (isset($_POST['submit'])) {
+// TODO: BUG, when only username is submitted, email changes to null
+if (isset($_POST['submit'])){
     $username = '';
     if(isset($_POST['username'])){
         $username = $_POST['username'];
@@ -97,7 +98,7 @@ if (isset($_POST['submit'])) {
 
                         <!--Dropdown Menu-->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Inserts/Deletes</a>
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Inserts</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="dungeonmaster.php">Dungeonmaster</a></li>
                                 <li><a class="dropdown-item" href="player.php">Player</a></li>

@@ -5,16 +5,13 @@ $database = new DatabaseHelper();
 
 $searchResults = [];
 
-//https://www.w3schools.com/php/php_superglobals_server.asp
-// we have multiple buttons. So we need a switch case to know which button was pressed
-
 if($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] == 'delete'){
-    if (isset($_POST['deletePlayer'])){
-        $userName = $_POST['deletePlayer'];
-        $errorcode = $database->deletePlayer($userName);
+    if (isset($_POST['deleteDungeonMaster'])){
+        $userName = $_POST['deleteDungeonMaster'];
+        $errorcode = $database->deleteDungeonMaster($userName);
 
         if($errorcode == 0){
-            echo "Player {$userName} banished";
+            echo "Dungeon Master {$userName} banished";
         } else {
             echo "There is nobody with the name {$userName} that you can banished dear admin :'(";
         }
@@ -22,11 +19,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] == 'delete'){
         echo "You did not gave me a name to banish";
     }
 } else if($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] == 'update') {
-    if(isset($_POST['updatePlayer'], $_POST['newUsername'], $_POST['newEmail'])){
-        $oldUserName = $_POST['updatePlayer'];
+    if(isset($_POST['updateDungeonMaster'], $_POST['newUsername'], $_POST['newEmail'])){
+        $oldUserName = $_POST['updateDungeonMaster'];
         $newUserName = $_POST['newUsername'];
         $newEmail = $_POST['newEmail'];
-        $success = $database->updatePlayer($newUserName, $oldUserName, $newEmail);
+        $success = $database->updateDungeonMaster($newUserName, $oldUserName, $newEmail);
 
         if($success){
             echo "Your wish to update {$oldUserName} to {$newUserName} was granted!";
@@ -40,12 +37,22 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] == 'delete'){
     $name = '';
     if(isset($_POST['name'])){
         $name = $_POST['name'];
-        $searchResults = $database->selectPlayer($name);
+        $searchResults = $database->selectDungeonMaster($name);
     } else {
         echo "Name is required.";
     }
 }
-
+/*
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
+    $name = '';
+    if(isset($_POST['name'])){
+        $name = $_POST['name'];
+        $searchResults = $database->selectDungeonMaster($name);
+    } else {
+        echo "Name is required.";
+    }
+}
+*/
 ?>
 
 <!DOCTYPE html>
@@ -117,72 +124,71 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] == 'delete'){
                 </div>
             </div>
         </nav>
-        
-        <div class="container">
 
-        <!--Container for the forms-->
-        <div class="container">
+        <div class="container my-5">
             <div class="row">
+
                 <div class="col">
-                    <h2>Delete Player</h2>
+                    <!-- Deleting Dungeon Master -->
+                    <h2>Delete Dungeon Master</h2>
                     <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                         <div class="mb-3">
-                            <label for="deletePlayer" class="form-label">Player Username:</label>
-                            <input type="text" class="form-control" id="deletePlayer" name="deletePlayer" required>
+                            <label for="deleteDungeonMaster" class="form-label">Username:</label>
+                            <input type="text" class="form-control" id="deleteDungeonMaster" name="deleteDungeonMaster" required>
                         </div>
                         <input type="hidden" name="action" value="delete">
-                        <button type="submit" class="btn btn-danger">Delete Player</button>
+                        <button type="submit" class="btn btn-danger">Delete Dungeon Master</button>
                     </form>
                 </div>
-                
+
                 <div class="col">
-                    <h2>Update Player</h2>
+                    <!-- Updating Dungeon Master -->
+                    <h2>Update Dungeon Master</h2>
                     <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                         <div class="mb-3">
-                            <label for="updatePlayer" class="form-label">Player Username:</label>
-                            <input type="text" class="form-control" id="updatePlayer" name="updatePlayer" required>
+                            <label for="updateDungeonMaster" class="form-label">Old Username:</label>
+                            <input type="text" class="form-control" id="updateDungeonMaster" name="updateDungeonMaster" required>
                         </div>
                         <div class="mb-3">
                             <label for="newUsername" class="form-label">New Username:</label>
                             <input type="text" class="form-control" id="newUsername" name="newUsername" required>
                         </div>
                         <div class="mb-3">
-                            <label for="newEmail" class="form-label">New Email address:</label>
-                            <input type="email" class="form-control" id="newEmail" name="newEmail">
+                            <label for="newEmail" class="form-label">New Email:</label>
+                            <input type="email" class="form-control" id="newEmail" name="newEmail" required>
                         </div>
                         <input type="hidden" name="action" value="update">
-                        <button type="submit" class="btn btn-primary">Update Player</button>
+                        <button type="submit" class="btn btn-success">Update Dungeon Master</button>
                     </form>
                 </div>
-                
             </div>
-
-
         </div>
+
+
+
+        <div class="container">
             Search results
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Player Name</th>
+                            <th scope="col">Dungeon Master Name</th>
                             <th scope="col">Email</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($searchResults as $index => $player) { ?>
+                        <?php foreach ($searchResults as $index => $dm) { ?>
                             <tr>
                                 <td><?= $index + 1 ?></td>
-                                <td><?= $player['USER_NAME'] ?></td>
-                                <td><?= $player['E_MAIL'] ?></td>
+                                <td><?= $dm['USER_NAME'] ?></td>
+                                <td><?= $dm['E_MAIL'] ?></td>
                             </tr>
                         <?php } ?>
                     </tbody>
                 </table>
             </div>
         </div>
-
-
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
